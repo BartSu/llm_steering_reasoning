@@ -181,6 +181,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--use_chat_format",
         action="store_true",
+        default=True,
     )
     parser.add_argument(
         "--dataset",
