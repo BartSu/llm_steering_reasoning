@@ -1,2 +1,4 @@
 # ignore results directory
 results/*  
+# ignore all pycache directories
+**/__pycache__/*
