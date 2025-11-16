@@ -2,7 +2,7 @@
 experiment_name="deepseek-baseline"
 model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")
 dataset=("gsm8k_test")
-temperature=(0)
+temperature=(0.7) # when temperature is 0, the num_sample has to be 1
 max_tokens=(8192)
 num_samples=(8 16)
 
