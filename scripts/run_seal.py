@@ -144,8 +144,8 @@ def main(args):
             vector_configs=[
                 # Execution vector (positive scale to promote execution-like text)
                 VectorConfig(
-                    path="execution_avg_vector.gguf",
-                    scale=1.0*args.scale,                            # Positive scale promotes this behavior
+                    path=args.vector_dir+"/execution_avg_vector.gguf",
+                    scale=0.5*args.scale,                            # Positive scale promotes this behavior
                     target_layers=[20],                   # Apply at layer 20
                     generate_trigger_tokens=matching_tokens_ids,  # Apply to newline tokens
                     algorithm="direct",                   # Direct application
@@ -154,8 +154,8 @@ def main(args):
                 
                 # Reflection vector (negative scale to suppress reflection)
                 VectorConfig(
-                    path="reflection_avg_vector.gguf",
-                    scale=-1.0*args.scale,                           # Negative scale suppresses this behavior
+                    path=args.vector_dir+"/reflection_avg_vector.gguf",
+                    scale=-0.5*args.scale,                           # Negative scale suppresses this behavior
                     target_layers=[20],
                     generate_trigger_tokens=matching_tokens_ids,
                     algorithm="direct",
@@ -164,8 +164,8 @@ def main(args):
                 
                 # Transition vector (negative scale to suppress transitions)
                 VectorConfig(
-                    path="transition_avg_vector.gguf",
-                    scale=-1.0*args.scale,                           # Negative scale suppresses this behavior
+                    path=args.vector_dir+"/transition_avg_vector.gguf",
+                    scale=-0.5*args.scale,                           # Negative scale suppresses this behavior
                     target_layers=[20],
                     generate_trigger_tokens=matching_tokens_ids,
                     algorithm="direct", 
@@ -184,14 +184,17 @@ def main(args):
         enforce_eager=True,
         gpu_memory_utilization=0.95, 
         tensor_parallel_size=torch.cuda.device_count(),
-        max_model_len=args.max_tokens
     )
 
     sampling_params = SamplingParams(n=args.num_samples,
                                     temperature=args.temperature,
-                                    max_tokens=args.max_tokens)
+                                    max_tokens=args.max_tokens,
+                                    skip_special_tokens=False)
 
-    outputs = model.generate(prompts=prompts, sampling_params=sampling_params)
+    outputs = model.generate(prompts=prompts, 
+                            sampling_params=sampling_params,
+                            steer_vector_request=sv_request
+                            )
 
     result = []
     for output in outputs:

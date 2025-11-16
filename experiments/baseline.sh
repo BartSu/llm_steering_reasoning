@@ -2,8 +2,8 @@
 experiment_name="deepseek-baseline"
 model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")
 dataset=("gsm8k_test")
-temperature=(0.7)
-max_tokens=(16384)
+temperature=(0)
+max_tokens=(8192)
 num_samples=(1)
 
 for model in ${model_name[@]}; do

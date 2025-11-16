@@ -123,7 +123,6 @@ def main(args):
                 swap_space=16,
                 gpu_memory_utilization=0.95, 
                 tensor_parallel_size=torch.cuda.device_count(), 
-                max_model_len=args.max_tokens,
                 enable_steer_vector=True,
                 enforce_eager=True
             )
@@ -131,7 +130,9 @@ def main(args):
 
     sampling_params = SamplingParams(n=args.num_samples,
                                     temperature=args.temperature,
-                                    max_tokens=args.max_tokens)
+                                    max_tokens=args.max_tokens,
+                                    skip_special_tokens=False)
+
 
     outputs = model.generate(prompts=prompts, sampling_params=sampling_params)
 
