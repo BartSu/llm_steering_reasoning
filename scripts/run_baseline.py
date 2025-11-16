@@ -118,7 +118,7 @@ def main(args):
     with open(os.path.join(args.save_dir, "example_prompt.txt"), 'w') as fout:
         fout.write(prompts[0])
 
-    model = LLM(model=args.model_name_or_path, tokenizer=args.tokenizer_name_or_path if args.tokenizer_name_or_path else args.model_name_or_path, swap_space=16, gpu_memory_utilization=0.98, tensor_parallel_size=torch.cuda.device_count(), max_model_len=args.max_tokens)
+    model = LLM(model=args.model_name_or_path, tokenizer=args.tokenizer_name_or_path if args.tokenizer_name_or_path else args.model_name_or_path, swap_space=16, gpu_memory_utilization=0.95, tensor_parallel_size=torch.cuda.device_count(), max_model_len=args.max_tokens)
 
 
     sampling_params = SamplingParams(n=args.num_samples,
