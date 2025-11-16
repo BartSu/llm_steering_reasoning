@@ -16,7 +16,6 @@ for model in ${model_name[@]}; do
                         --num_samples $num_samples \
                         --temperature $temperature \
                         --max_tokens $max_tokens \
-                        --max_examples 1 \
                         --save_dir results/qwen3-basemodel/$model/$dataset/$num_samples/$temperature/$max_tokens
                 done
             done
