@@ -2,3 +2,5 @@
 results/*  
 # ignore all pycache directories
 **/__pycache__/*
+# ignore vectors directory
+vectors/*
