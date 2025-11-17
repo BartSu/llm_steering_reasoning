@@ -2,7 +2,7 @@
 experiment_name="deepseek-seal"
 model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")
 dataset=("gsm8k_test")
-temperature=(0.7 1.0 1.2)
+temperature=(0.1 0.3 0.5 0.7 1.0 1.2)
 max_tokens=(8192)
 num_samples=(1)
 vector_scale=(1)
