@@ -184,6 +184,7 @@ def main(args):
         enforce_eager=True,
         gpu_memory_utilization=0.95, 
         tensor_parallel_size=torch.cuda.device_count(),
+        max_model_len=args.max_tokens + 2000
     )
 
     sampling_params = SamplingParams(n=args.num_samples,

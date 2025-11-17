@@ -124,7 +124,8 @@ def main(args):
                 gpu_memory_utilization=0.95, 
                 tensor_parallel_size=torch.cuda.device_count(), 
                 enable_steer_vector=True,
-                enforce_eager=True
+                enforce_eager=True,
+                max_model_len=args.max_tokens + 2000
             )
 
 
