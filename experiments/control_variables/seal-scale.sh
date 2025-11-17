@@ -1,7 +1,7 @@
 #!/bin/bash
 experiment_name="deepseek-seal"
 model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")
-dataset=("gsm8k_test")
+dataset=("MATH500")
 temperature=(0)
 max_tokens=(8192)
 num_samples=(1)
