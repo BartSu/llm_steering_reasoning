@@ -152,7 +152,7 @@ def main(args):
         swap_space=16, 
         gpu_memory_utilization=0.95, 
         tensor_parallel_size=torch.cuda.device_count(), 
-        max_model_len=args.max_tokens + 8000
+        max_model_len=args.max_tokens + 16384
     )
 
     sampling_params = SamplingParams(
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--max_tokens",
         type=int,
-        default=1024,
+        default=32768,
     )
     parser.add_argument(
         "--num_samples",
