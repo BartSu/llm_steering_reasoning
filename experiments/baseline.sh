@@ -1,8 +1,8 @@
 #! /bin/bash
 experiment_name="deepseek-baseline"
-model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B" "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B")
-dataset=("MATH500" "gsm8k_test")
-temperature=(0 0.7)
+model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")
+dataset=("MATH500")
+temperature=(0.7)
 max_tokens=(10000)
 num_samples=(1 256)
 
@@ -12,7 +12,7 @@ for model in ${model_name[@]}; do
             for temperature in ${temperature[@]}; do
                 for max_tokens in ${max_tokens[@]}; do
                     # if the directory results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens exists, skip
-                    if [ -d "results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens" ]; then
+                    if [ -d "results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/predictions.jsonl" ]; then
                         continue
                     fi
                     python scripts/run_baseline.py \
