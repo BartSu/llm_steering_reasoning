@@ -23,14 +23,14 @@ for model in ${model_name[@]}; do
                             --save_dir results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens
                     fi
                     
-                    if [ ! -f "results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/judgement.jsonl" ]; then
+                    if [ ! -f "results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/judgement-8.jsonl" ]; then
                         echo "Running judgement for $model $ds $num_samples $temperature $max_tokens"
                         python scripts/run_judge.py \
                             --model_name_or_path openai/gpt-oss-120b \
                             --num_samples 8 \
                             --predictions_path results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/predictions.jsonl \
                             --max_tokens 8192 \
-                            --save_dir results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens
+                            --save_dir results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/judgement-8
                     fi
                 done
             done
