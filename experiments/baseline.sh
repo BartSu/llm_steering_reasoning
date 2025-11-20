@@ -1,6 +1,6 @@
 #! /bin/bash
 experiment_name="deepseek-baseline"
-model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")
+model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B")
 dataset=("gsm8k_test" "MATH500")
 temperature=(0.5)
 max_tokens=(10000)
@@ -23,14 +23,14 @@ for model in ${model_name[@]}; do
                             --save_dir results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens
                     fi
                     
-                    if [ ! -f "results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/judgement-8.jsonl" ]; then
+                    if [ ! -f "results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/judgement.jsonl" ]; then
                         echo "Running judgement for $model $ds $num_samples $temperature $max_tokens"
                         python scripts/run_judge.py \
                             --model_name_or_path openai/gpt-oss-120b \
                             --num_samples 8 \
                             --predictions_path results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/predictions.jsonl \
                             --max_tokens 8192 \
-                            --save_dir results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/judgement-8
+                            --save_dir results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/
                     fi
                 done
             done
