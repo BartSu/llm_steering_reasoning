@@ -123,8 +123,7 @@ def main(args):
                 swap_space=16,
                 gpu_memory_utilization=0.95, 
                 tensor_parallel_size=torch.cuda.device_count(), 
-                enable_steer_vector=True,
-                enforce_eager=True,
+                # enforce_eager=True, # set False to allow speed up
                 max_model_len=args.max_tokens + 2000
             )
 
