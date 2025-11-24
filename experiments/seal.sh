@@ -1,10 +1,10 @@
 #!/bin/bash
 experiment_name="deepseek-seal"
 model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")
-dataset=("MATH500")
-temperature=(0.7)
+dataset=("gsm8k_test")
+temperature=(0.1)
 max_tokens=(10000)
-num_samples=(1)
+num_samples=(100)
 vector_scale=(1)
 
 for model in ${model_name[@]}; do
@@ -19,7 +19,7 @@ for model in ${model_name[@]}; do
                             --temperature $temperature \
                             --max_tokens $max_tokens \
                             --num_samples $num_samples \
-                            --vector_dir ./vectors/seal/$model/0.7 \
+                            --vector_dir ./vectors/seal/$model \
                             --scale $scale \
                             --save_dir results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/$scale
                     done
