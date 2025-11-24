@@ -1,10 +1,10 @@
 #! /bin/bash
 experiment_name="deepseek-baseline"
-model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B")
+model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B" "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B")
 dataset=("gsm8k_test" "MATH500")
-temperature=(0.5)
+temperature=(0.1 0.3 0.5 0.7)
 max_tokens=(10000)
-num_samples=(1)
+num_samples=(100)
 
 for model in ${model_name[@]}; do
     for ds in ${dataset[@]}; do
@@ -27,7 +27,7 @@ for model in ${model_name[@]}; do
                         echo "Running judgement for $model $ds $num_samples $temperature $max_tokens"
                         python scripts/run_judge.py \
                             --model_name_or_path openai/gpt-oss-120b \
-                            --num_samples 8 \
+                            --num_samples 1 \
                             --predictions_path results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/predictions.jsonl \
                             --max_tokens 8192 \
                             --save_dir results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/

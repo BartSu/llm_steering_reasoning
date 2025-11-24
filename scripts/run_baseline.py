@@ -56,7 +56,18 @@ def main(args):
 
     print("Loading data...")
     test_data = []
-    if args.dataset == "MATH500":
+    if args.dataset == "AMO-Bench":
+        data_path = "data/AMO-Bench/test.jsonl"
+        with open(data_path) as fin:
+            for line in fin:
+                example = json.loads(line)
+                gt = extract_box(example["answer"])
+                test_data.append({
+                    "question": example["prompt"],
+                    "answer": example["solution"],
+                    "gt": gt,
+                })
+    elif args.dataset == "MATH500":
         data_path = "data/MATH500/test.jsonl"
         with open(data_path) as fin:
             for line in fin:
