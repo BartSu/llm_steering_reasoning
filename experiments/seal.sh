@@ -13,15 +13,19 @@ for model in ${model_name[@]}; do
             for temperature in ${temperature[@]}; do
                 for max_tokens in ${max_tokens[@]}; do
                     for scale in ${vector_scale[@]}; do
-                        python scripts/run_seal.py \
-                            --model_name_or_path $model \
-                            --dataset $ds \
-                            --temperature $temperature \
-                            --max_tokens $max_tokens \
-                            --num_samples $num_samples \
-                            --vector_dir ./vectors/seal/$model \
-                            --scale $scale \
-                            --save_dir results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/$scale
+                        if [ ! -f "results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/$scale/predictions.jsonl" ]; then
+                            echo "Running seal for $model $ds $num_samples $temperature $max_tokens $scale"
+                            python scripts/run_seal.py \
+                                --model_name_or_path $model \
+                                --dataset $ds \
+                                --temperature $temperature \
+                                --max_tokens $max_tokens \
+                                --num_samples $num_samples \
+                                --vector_dir ./vectors/seal/$model \
+                                --scale $scale \
+                                --save_dir results/$experiment_name/$model/$ds/$num_samples/$temperature/$max_tokens/$scale
+                            fi
+                        done
                     done
                 done
             done

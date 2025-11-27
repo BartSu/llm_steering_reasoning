@@ -14,16 +14,19 @@ for model in ${model_name[@]}; do
             for temperature in ${temperature[@]}; do
                 for max_tokens in ${max_tokens[@]}; do
                     for scale in ${vector_scale[@]}; do
-                            for pair_number in ${pair_number[@]}; do
-                            python scripts/run_basic.py \
-                                --model_name_or_path $model \
-                                --dataset $ds \
-                                --temperature $temperature \
-                                --max_tokens $max_tokens \
-                                --num_samples $num_samples \
-                                --vector_dir ./vectors/basic/$model/$pair_number \
-                                --scale $scale \
-                                --save_dir results/$experiment_name/reason-gguf-$pair_number/$model/$ds/$num_samples/$temperature/$max_tokens/$scale
+                        for pair_number in ${pair_number[@]}; do
+                            if [ ! -f "results/$experiment_name/reason-gguf-$pair_number/$model/$ds/$num_samples/$temperature/$max_tokens/$scale/predictions.jsonl" ]; then
+                                echo "Running basic for $model $ds $num_samples $temperature $max_tokens $scale $pair_number"
+                                python scripts/run_basic.py \
+                                    --model_name_or_path $model \
+                                    --dataset $ds \
+                                    --temperature $temperature \
+                                    --max_tokens $max_tokens \
+                                    --num_samples $num_samples \
+                                    --vector_dir ./vectors/basic/$model/$pair_number \
+                                    --scale $scale \
+                                    --save_dir results/$experiment_name/reason-gguf-$pair_number/$model/$ds/$num_samples/$temperature/$max_tokens/$scale
+                            fi
                         done
                     done
                 done
