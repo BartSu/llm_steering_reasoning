@@ -256,15 +256,13 @@ def main(args):
         "prompt": prompt,
         "problem": example["question"],
         "answer": example["gt"],
-        "solution":  example["answer"],
+        "solution":  example["answer"] if "answer" in example else None,
         "model_generation": output,
     } for example, output, prompt in zip(test_data, outputs, prompts)]
 
     with open(os.path.join(args.save_dir, "predictions.jsonl"), "w") as fout:
         for prediction in predictions:
             fout.write(json.dumps(prediction) + "\n")
-    
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
