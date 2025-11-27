@@ -57,7 +57,52 @@ def main(args):
 
     print("Loading data...")
     test_data = []
-    if args.dataset == "MATH500":
+    if args.dataset == "minervamath":
+        data_path = "data/minervamath/test.jsonl"
+        with open(data_path) as fin:
+            for line in fin:
+                example = json.loads(line)
+                gt = example["answer"]
+                test_data.append({
+                    "question": example["question"],
+                    "gt": gt,
+                })
+    elif args.dataset == "olympiadbench":
+        data_path = "data/olympiadbench/test.jsonl"
+        with open(data_path) as fin:
+            for line in fin:
+                example = json.loads(line)
+                gt = list(example["final_answer"])[0]
+                test_data.append({
+                    "question": example["question"],
+                    "solution": list(example["solution"])[0],
+                    "gt": gt,
+                })
+    elif args.dataset in ["aime24", "aime25"]:
+        data_path = f"data/{args.dataset}/test.jsonl"
+        with open(data_path) as fin:
+            for line in fin:
+                example = json.loads(line)
+                if args.dataset == "aime24":
+                    gt = extract_box(example["solution"])
+                elif args.dataset == "aime25":
+                    gt = example["answer"]
+                test_data.append({
+                    "question": example["problem"],
+                    "gt": gt,
+                })
+    elif args.dataset == "AMO-Bench":
+        data_path = "data/AMO-Bench/test.jsonl"
+        with open(data_path) as fin:
+            for line in fin:
+                example = json.loads(line)
+                gt = extract_box(example["answer"])
+                test_data.append({
+                    "question": example["prompt"],
+                    "answer": example["solution"],
+                    "gt": gt,
+                })
+    elif args.dataset == "MATH500":
         data_path = "data/MATH500/test.jsonl"
         with open(data_path) as fin:
             for line in fin:

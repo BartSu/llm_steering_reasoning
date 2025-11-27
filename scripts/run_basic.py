@@ -57,7 +57,52 @@ def main(args):
 
     print("Loading data...")
     test_data = []
-    if args.dataset == "MATH500":
+    if args.dataset == "minervamath":
+        data_path = "data/minervamath/test.jsonl"
+        with open(data_path) as fin:
+            for line in fin:
+                example = json.loads(line)
+                gt = example["answer"]
+                test_data.append({
+                    "question": example["question"],
+                    "gt": gt,
+                })
+    elif args.dataset == "olympiadbench":
+        data_path = "data/olympiadbench/test.jsonl"
+        with open(data_path) as fin:
+            for line in fin:
+                example = json.loads(line)
+                gt = list(example["final_answer"])[0]
+                test_data.append({
+                    "question": example["question"],
+                    "solution": list(example["solution"])[0],
+                    "gt": gt,
+                })
+    elif args.dataset in ["aime24", "aime25"]:
+        data_path = f"data/{args.dataset}/test.jsonl"
+        with open(data_path) as fin:
+            for line in fin:
+                example = json.loads(line)
+                if args.dataset == "aime24":
+                    gt = extract_box(example["solution"])
+                elif args.dataset == "aime25":
+                    gt = example["answer"]
+                test_data.append({
+                    "question": example["problem"],
+                    "gt": gt,
+                })
+    elif args.dataset == "AMO-Bench":
+        data_path = "data/AMO-Bench/test.jsonl"
+        with open(data_path) as fin:
+            for line in fin:
+                example = json.loads(line)
+                gt = extract_box(example["answer"])
+                test_data.append({
+                    "question": example["prompt"],
+                    "answer": example["solution"],
+                    "gt": gt,
+                })
+    elif args.dataset == "MATH500":
         data_path = "data/MATH500/test.jsonl"
         with open(data_path) as fin:
             for line in fin:
@@ -134,17 +179,17 @@ def main(args):
             if isinstance(token, str) and token.endswith(target_suffix)
         ]
 
-        # Configure steering vector request for SEAL control
+        # Configure steering vector request for Basic control
         sv_request = SteerVectorRequest(
             # Name and ID for the steering vector
-            steer_vector_name="complex_control",
+            steer_vector_name="basic_control",
             steer_vector_int_id=1,
             
-            # Configure the three steering vectors (execution, reflection, transition)
+            # Configure the steering vector (reason)
             vector_configs=[
                 VectorConfig(
                     path=args.vector_dir+"/reason.gguf",
-                    scale=0.1*args.scale,                            # Positive scale promotes this behavior
+                    scale=1*args.scale,                            # Scale promotes this behavior
                     target_layers=[20],                   # Apply at layer 20
                     generate_trigger_tokens=matching_tokens_ids,  # Apply to newline tokens
                     algorithm="direct",                   # Direct application
@@ -189,7 +234,7 @@ def main(args):
         "prompt": prompt,
         "problem": example["question"],
         "answer": example["gt"],
-        "solution":  example["answer"],
+        "solution":  example["answer"] if "answer" in example else None,
         "model_generation": output,
     } for example, output, prompt in zip(test_data, outputs, prompts)]
 
