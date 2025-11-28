@@ -1,10 +1,10 @@
 #! /bin/bash
 experiment_name="deepseek-baseline"
-model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")
-dataset=("gsm8k_train")
-temperature=(0.1)
+model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B" "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B")
+dataset=("olympiadbench" "minervamath" "aime25" "aime24" "AMO-Bench" "gsm8k" "MATH500")
+temperature=(0.1 0.3 0.5 0.7 1.0 1.2)
 max_tokens=(10000)
-num_samples=(10)
+num_samples=(100)
 
 for model in ${model_name[@]}; do
     for ds in ${dataset[@]}; do
