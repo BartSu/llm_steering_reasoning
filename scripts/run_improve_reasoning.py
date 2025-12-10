@@ -8,6 +8,7 @@ import torch
 import evaluate
 from transformers import AutoTokenizer
 from vllm import LLM, SamplingParams
+from vllm.steer_vectors.request import SteerVectorRequest, VectorConfig
 
 import os
 
@@ -163,23 +164,62 @@ def main(args):
     with open(os.path.join(args.save_dir, "example_prompt.txt"), 'w') as fout:
         fout.write(prompts[0])
 
-    model = LLM(model=args.model_name_or_path,
-                tokenizer=args.tokenizer_name_or_path if args.tokenizer_name_or_path else args.model_name_or_path,
-                swap_space=16,
-                gpu_memory_utilization=0.90, 
-                tensor_parallel_size=torch.cuda.device_count(), 
-                # enforce_eager=True, # set False to allow speed up
-                max_model_len=args.max_tokens + 2000
-            )
+    if args.vector_dir and os.path.exists(args.vector_dir):
+        # Define the suffix for newline tokens in the tokenizer
+        target_suffix = "ĊĊ"  # "\n\n" is tokenized as "ĊĊ"
 
+        # Get complete tokenizer vocabulary
+        vocab = tokenizer.get_vocab()
+
+        # Find all tokens and their IDs that end with the target suffix
+        # These are the newline tokens we'll apply steering to
+        matching_tokens_ids = [
+            token_id
+            for token, token_id in vocab.items()
+            if isinstance(token, str) and token.endswith(target_suffix)
+        ]
+
+        # Configure steering vector request for improve reasoning
+        sv_request = SteerVectorRequest(
+            # Name and ID for the steering vector
+            steer_vector_name="complex_control",
+            steer_vector_int_id=1,
+            
+            # Configure the steering vector (reason)
+            vector_configs=[
+                VectorConfig(
+                    path=args.vector_dir+"/reason.gguf",
+                    scale=1*args.scale,                            # Positive scale promotes this behavior
+                    target_layers=list(range(16,20)),                   # Apply at layer 20
+                    generate_trigger_tokens=matching_tokens_ids,  # Apply to newline tokens
+                    algorithm="direct",                   # Direct application
+                    normalize=False                       # Do not normalize vectors
+                ),
+            ],
+            
+            # Additional parameters
+            debug=False,                        # Don't output debug info
+            conflict_resolution="sequential"    # Apply vectors in sequence
+        )
+
+    model = LLM(
+        model=args.model_name_or_path,
+        enable_steer_vector=True,
+        enforce_eager=True,
+        gpu_memory_utilization=0.95, 
+        tensor_parallel_size=torch.cuda.device_count(),
+        max_model_len=args.max_tokens + 2000
+    )
 
     sampling_params = SamplingParams(n=args.num_samples,
                                     temperature=args.temperature,
                                     max_tokens=args.max_tokens,
                                     skip_special_tokens=False)
 
-
-    outputs = model.generate(prompts=prompts, sampling_params=sampling_params)
+    outputs = model.generate(prompts=prompts, 
+                            sampling_params=sampling_params,
+                            steer_vector_request=sv_request
+                            )
 
     result = []
     for output in outputs:
@@ -195,15 +235,13 @@ def main(args):
         "prompt": prompt,
         "problem": example["question"],
         "answer": example["gt"],
-        "solution": example["answer"] if "answer" in example else None,
+        "solution":  example["answer"] if "answer" in example else None,
         "model_generation": output,
     } for example, output, prompt in zip(test_data, outputs, prompts)]
 
     with open(os.path.join(args.save_dir, "predictions.jsonl"), "w") as fout:
         for prediction in predictions:
             fout.write(json.dumps(prediction) + "\n")
-    
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -261,6 +299,16 @@ if __name__ == "__main__":
         "--temperature",
         type=float,
         default=0.0,
+    )
+    parser.add_argument(
+        "--vector_dir",
+        type=str,
+        default=None,
+    )
+    parser.add_argument(
+        "--scale",
+        type=float,
+        default=1.0,
     )
     args = parser.parse_args()
     

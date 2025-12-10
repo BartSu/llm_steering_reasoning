@@ -1,8 +1,8 @@
 #! /bin/bash
-experiment_name="deepseek-baseline"
-model_name=("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B" "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B")
-dataset=("olympiadbench" "minervamath" "aime25" "aime24" "AMO-Bench" "gsm8k" "MATH500")
-temperature=(0.1 0.3 0.5 0.7 1.0 1.2)
+experiment_name="qwen3-baseline"
+model_name=("Qwen/Qwen3-0.6B" "Qwen/Qwen3-1.7B" "Qwen/Qwen3-4B" "Qwen/Qwen3-8B" "Qwen/Qwen3-14B" "Qwen/Qwen3-32B" "Qwen/Qwen3-30B-A3B")
+dataset=("aime25" "aime24" "MATH500" "AMO-Bench" "minervamath" "olympiadbench")
+temperature=(0.01 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2)
 max_tokens=(10000)
 num_samples=(100)
 

@@ -147,15 +147,28 @@ def main(args):
         tokenizer.pad_token = tokenizer.eos_token
         tokenizer.pad_token_id = tokenizer.eos_token_id
 
-    prefix="Answer the following questions. You should think step-by-step and put your final answer within \\boxed{}.\n"
+    prefix = "Answer the following questions. You should think step-by-step and put your final answer within \\boxed{}.\n"
+
+    # optionally steer the model with an emotion-specific system prompt
+    if hasattr(args, "emotion") and args.emotion is not None and args.emotion != "":
+        prefix += f"You should respond while exhibiting a {args.emotion} emotional tone.\n"
+
     prompts = []
     for i, example in enumerate(test_data):
-        prompt =  prefix+"Question: " + example["question"].strip()+"\nAnswer: "
+        prompt = prefix + "Question: " + example["question"].strip() + "\nAnswer: "
         if args.use_chat_format:
             if "gemma" in args.model_name_or_path or "deepseek" in args.model_name_or_path:
-                messages = [{"role": "user", "content": prefix + "Question: " + example["question"].strip()}]
+                # models without an explicit system role: fold system/emotion instructions into the user message
+                messages = [{
+                    "role": "user",
+                    "content": prefix + "Question: " + example["question"].strip()
+                }]
             else:
-                messages = [{"role": "system", "content": prefix}, {"role": "user", "content": "Question: " + example["question"].strip()}]
+                # standard chat models: use a dedicated system prompt that encodes emotion steering
+                messages = [
+                    {"role": "system", "content": prefix},
+                    {"role": "user", "content": "Question: " + example["question"].strip()},
+                ]
             prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
             if args.remove_bos and tokenizer.bos_token is not None and prompt.startswith(tokenizer.bos_token):
                 prompt = prompt[len(tokenizer.bos_token):]
@@ -166,7 +179,7 @@ def main(args):
     model = LLM(model=args.model_name_or_path,
                 tokenizer=args.tokenizer_name_or_path if args.tokenizer_name_or_path else args.model_name_or_path,
                 swap_space=16,
-                gpu_memory_utilization=0.90, 
+                gpu_memory_utilization=0.95, 
                 tensor_parallel_size=torch.cuda.device_count(), 
                 # enforce_eager=True, # set False to allow speed up
                 max_model_len=args.max_tokens + 2000
@@ -261,6 +274,12 @@ if __name__ == "__main__":
         "--temperature",
         type=float,
         default=0.0,
+    )
+    parser.add_argument(
+        "--emotion",
+        type=str,
+        default=None,
+        help="Optional emotional tone to encode in the system prompt (e.g., 'happy', 'sad', 'confident').",
     )
     args = parser.parse_args()
     
